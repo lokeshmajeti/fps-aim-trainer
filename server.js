@@ -10,17 +10,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname)); 
 
-// --- MONGODB CONNECTION WITH DIRECT CONNECTION FLAGS ---
+// --- PROD-READY CONNECTION ---
 mongoose.connect(process.env.MONGO_URI, {
-    family: 4,              // <-- THE MAGIC FIX: Forces Node to use standard IPv4
-    directConnection: true, 
+    family: 4,                  // Keeps it safe, forces IPv4 usage
     serverSelectionTimeoutMS: 5000 
 })
-  .then(() => console.log('Connected to Global Database!'))
-  .catch(err => {
-      console.error('Database connection error!');
-      console.error(err.message);
-  });
+.then(() => console.log("Connected to Global Database!"))
+.catch(err => console.error("Database connection error:", err));
 // --- DATABASE SCHEMA ---
 const scoreSchema = new mongoose.Schema({
     name: String,
