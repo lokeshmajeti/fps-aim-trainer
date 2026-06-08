@@ -46,7 +46,7 @@ let currentPlayDifficulty = 'medium';
 let currentViewDifficulty = 'medium';
 
 // NEW: Your Backend API URL
-const API_URL = 'http://localhost:3000/api/scores';
+const API_URL = 'https://aim-trainer-api.onrender.com/api/scores';
 
 // Fetch the global leaderboard immediately when the page loads
 updateLeaderboard();
