@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPS Aim Trainer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="hud">
+        <div class="stats">
+            <h2>Score: <span id="score">0</span></h2>
+            <h2>Time: <span id="timer">30</span>s</h2>
+        </div>
+        
+        <div class="difficulty-selector" id="play-diff-selector">
+            <button class="diff-btn" data-diff="easy">EASY</button>
+            <button class="diff-btn active" data-diff="medium">MEDIUM</button>
+            <button class="diff-btn" data-diff="hard">HARD</button>
+        </div>
+        
+        <button id="start-btn">Start Drill</button>
+    </div>
+
+    <div id="arena" class="arena"></div>
+
+    <div class="leaderboard">
+        <h3>Top Operators</h3>
+        <div class="lb-tabs" id="view-diff-selector">
+            <button class="tab-btn" data-tab="easy">EASY</button>
+            <button class="tab-btn active" data-tab="medium">MEDIUM</button>
+            <button class="tab-btn" data-tab="hard">HARD</button>
+        </div>
+        <ul id="high-score-list"></ul>
+    </div>
+
+    <div id="name-modal" class="modal hidden">
+        <div class="modal-content">
+            <span id="close-modal" class="close-btn">&times;</span>
+            <h3>MISSION COMPLETE</h3>
+            <p>Difficulty: <span id="final-diff-display" class="highlight">MEDIUM</span></p>
+            <p>Final Score: <span id="final-score-display" class="highlight">0</span></p>
+            <input type="text" id="player-name" placeholder="Enter Operator Name..." maxlength="12" autocomplete="off">
+            <button id="save-score-btn">Save Score</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
