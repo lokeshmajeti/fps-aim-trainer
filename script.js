@@ -70,6 +70,14 @@ tabButtons.forEach(btn => {
 });
 
 function startGame() {
+    // --- NEW: Request Fullscreen ---
+    if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch((err) => {
+            console.log("Fullscreen blocked by browser:", err.message);
+        });
+    }
+    // -------------------------------
+
     score = 0;
     timeLeft = 30;
     scoreDisplay.textContent = score;
@@ -125,6 +133,12 @@ function spawnTarget() {
 }
 
 function endGame() {
+    // --- NEW: Exit Fullscreen ---
+    if (document.fullscreenElement) {
+        document.exitFullscreen().catch(err => console.log(err));
+    }
+    // ----------------------------
+
     clearInterval(gameInterval);
     clearInterval(targetMoveInterval);
     arena.innerHTML = '';
