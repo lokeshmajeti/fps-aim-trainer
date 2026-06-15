@@ -238,3 +238,46 @@ button:hover {
 #save-score-btn:hover {
     background-color: #00b8cc;
 }
+/* --- MOBILE RESPONSIVE LAYOUT --- */
+@media (max-width: 768px) {
+    /* Allow the page to scroll on mobile so the leaderboard isn't cut off */
+    body {
+        height: auto;
+        overflow-y: auto; 
+        padding-bottom: 30px;
+    }
+
+    /* Stack the top menu items vertically so they don't squish */
+    .hud {
+        flex-direction: column;
+        gap: 15px;
+        padding: 10px;
+        text-align: center;
+    }
+
+    /* Shrink the text slightly for mobile screens */
+    .stats h2 {
+        font-size: 20px;
+        margin: 5px 0;
+    }
+
+    /* Make the game arena wider on phones to maximize tap space */
+    .arena {
+        width: 95vw;
+        height: 50vh; /* Adjusts the height to feel more natural on a phone */
+        border-width: 2px;
+    }
+
+    /* Ensure the leaderboard doesn't break off the edges of the screen */
+    .leaderboard {
+        width: 90vw;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+    /* Adjust modal size for mobile screens */
+    .modal-content {
+        width: 85%;
+        padding: 20px;
+    }
+}
