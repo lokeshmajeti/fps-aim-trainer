@@ -84,6 +84,9 @@ async function startGame() {
     gameStatus.hidden = true;
     isGameRunning = true;
     startBtn.disabled = true;
+    diffButtons.forEach(button => {
+        button.disabled = true;
+    });
 
     if (gameScreen.requestFullscreen) {
         try {
@@ -130,6 +133,9 @@ function cancelGame() {
     arena.innerHTML = '';
     startBtn.disabled = false;
     startBtn.textContent = 'Start Drill';
+    diffButtons.forEach(button => {
+        button.disabled = false;
+    });
     gameStatus.textContent = 'Drill canceled because fullscreen was exited. Your score was not saved.';
     gameStatus.hidden = false;
 }
@@ -185,6 +191,9 @@ async function endGame() {
     arena.innerHTML = '';
     startBtn.disabled = false;
     startBtn.textContent = 'Play Again';
+    diffButtons.forEach(button => {
+        button.disabled = false;
+    });
 
     if (document.fullscreenElement === gameScreen) {
         try {
