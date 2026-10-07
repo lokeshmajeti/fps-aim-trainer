@@ -45,8 +45,11 @@ let pendingScore = 0;
 let currentPlayDifficulty = 'medium';
 let currentViewDifficulty = 'medium';
 
-// NEW: Your Backend API URL
-const API_URL = 'https://aim-trainer-api.onrender.com/api/scores';
+// Use the local Express server during development and Render for the live site.
+const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+const API_URL = isLocalHost
+    ? '/api/scores'
+    : 'https://aim-trainer-api.onrender.com/api/scores';
 
 // Fetch the global leaderboard immediately when the page loads
 updateLeaderboard();
@@ -151,7 +154,13 @@ function endGame() {
 async function checkHighScore(finalScore) {
     try {
         const response = await fetch(`${API_URL}/${currentPlayDifficulty}`);
+        if (!response.ok) {
+            throw new Error(`Backend returned HTTP ${response.status}`);
+        }
         const topScores = await response.json();
+        if (!Array.isArray(topScores)) {
+            throw new Error('Backend returned an invalid scores response');
+        }
 
         const lowestScore = topScores.length < 5 ? 0 : topScores[topScores.length - 1].score;
 
@@ -178,7 +187,7 @@ saveScoreBtn.addEventListener('click', async () => {
     saveScoreBtn.textContent = "Saving to Cloud...";
 
     try {
-        await fetch(API_URL, {
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -187,17 +196,20 @@ saveScoreBtn.addEventListener('click', async () => {
                 difficulty: currentPlayDifficulty
             })
         });
+        if (!response.ok) {
+            throw new Error(`Backend returned HTTP ${response.status}`);
+        }
         
         await updateLeaderboard();
+        nameModal.classList.add('hidden');
+        playerNameInput.value = '';
     } catch (error) {
         console.error("Failed to save score:", error);
-        alert("Server error! Make sure your backend node server is running.");
+        alert("Could not save your score. Check that the backend and database are connected, then try again.");
+    } finally {
+        saveScoreBtn.disabled = false;
+        saveScoreBtn.textContent = "Save Score";
     }
-
-    saveScoreBtn.disabled = false;
-    saveScoreBtn.textContent = "Save Score";
-    nameModal.classList.add('hidden');
-    playerNameInput.value = '';
 });
 
 // NEW: Pulls the newest scores from the database and updates the screen
@@ -206,7 +218,13 @@ async function updateLeaderboard() {
 
     try {
         const response = await fetch(`${API_URL}/${currentViewDifficulty}`);
+        if (!response.ok) {
+            throw new Error(`Backend returned HTTP ${response.status}`);
+        }
         const topScores = await response.json();
+        if (!Array.isArray(topScores)) {
+            throw new Error('Backend returned an invalid scores response');
+        }
 
         highScoreList.innerHTML = '';
 
