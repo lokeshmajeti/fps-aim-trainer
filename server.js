@@ -10,13 +10,20 @@ const MAX_SCORE_PER_ROUND = 300;
 const allowedOrigins = [
     'https://lokeshmajeti.github.io',
     'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'null'
+    'http://127.0.0.1:3000'
 ];
 
 app.use(cors({ origin: allowedOrigins, methods: ['GET', 'POST'], allowedHeaders: ['Content-Type'] }));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.static(__dirname)); 
+
+app.get('/api/health', (req, res) => {
+    const databaseConnected = mongoose.connection.readyState === 1;
+    res.status(databaseConnected ? 200 : 503).json({
+        status: databaseConnected ? 'ok' : 'unavailable',
+        database: databaseConnected ? 'connected' : 'disconnected'
+    });
+});
 
 // --- DATABASE SCHEMA ---
 const scoreSchema = new mongoose.Schema({
