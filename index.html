@@ -7,28 +7,31 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="hud">
-        <div class="stats">
-            <h2>Score: <span id="score">0</span></h2>
-            <h2>Time: <span id="timer">30</span>s</h2>
-        </div>
-        
-        <div class="difficulty-selector" id="play-diff-selector">
-            <button class="diff-btn" data-diff="easy">EASY</button>
-            <button class="diff-btn active" data-diff="medium">MEDIUM</button>
-            <button class="diff-btn" data-diff="hard">HARD</button>
-        </div>
-        
-        <button id="start-btn">Start Drill</button>
-    </div>
+    <main id="game-screen" class="game-screen">
+        <div class="hud">
+            <div class="stats">
+                <h2>Score: <span id="score">0</span></h2>
+                <h2>Time: <span id="timer">30</span>s</h2>
+            </div>
 
-    <div id="arena" class="arena"></div>
+            <div class="difficulty-selector" id="play-diff-selector">
+                <button class="diff-btn active" data-diff="easy">EASY</button>
+                <button class="diff-btn" data-diff="medium">MEDIUM</button>
+                <button class="diff-btn" data-diff="hard">HARD</button>
+            </div>
+
+            <button id="start-btn">Start Drill</button>
+        </div>
+
+        <p id="game-status" class="game-status" role="status" aria-live="polite" hidden></p>
+        <div id="arena" class="arena"></div>
+    </main>
 
     <div class="leaderboard">
         <h3>Top Operators</h3>
         <div class="lb-tabs" id="view-diff-selector">
-            <button class="tab-btn" data-tab="easy">EASY</button>
-            <button class="tab-btn active" data-tab="medium">MEDIUM</button>
+            <button class="tab-btn active" data-tab="easy">EASY</button>
+            <button class="tab-btn" data-tab="medium">MEDIUM</button>
             <button class="tab-btn" data-tab="hard">HARD</button>
         </div>
         <ul id="high-score-list"></ul>

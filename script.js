@@ -23,6 +23,8 @@ function playHitSound() {
 // --------------------------
 
 const arena = document.getElementById('arena');
+const gameScreen = document.getElementById('game-screen');
+const gameStatus = document.getElementById('game-status');
 const scoreDisplay = document.getElementById('score');
 const timerDisplay = document.getElementById('timer');
 const startBtn = document.getElementById('start-btn');
@@ -34,6 +36,11 @@ const saveScoreBtn = document.getElementById('save-score-btn');
 const finalScoreDisplay = document.getElementById('final-score-display');
 const finalDiffDisplay = document.getElementById('final-diff-display');
 
+let isMobileDevice = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+window.addEventListener('resize', () => {
+    isMobileDevice = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+});
+
 const diffButtons = document.querySelectorAll('.diff-btn');
 const tabButtons = document.querySelectorAll('.tab-btn');
 
@@ -41,9 +48,10 @@ let targetMoveInterval;
 let score = 0;
 let timeLeft = 30;
 let gameInterval;
+let isGameRunning = false;
 let pendingScore = 0;
-let currentPlayDifficulty = 'medium';
-let currentViewDifficulty = 'medium';
+let currentPlayDifficulty = 'easy';
+let currentViewDifficulty = 'easy';
 
 // Use the local Express server during development and Render for the live site.
 const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
@@ -72,20 +80,30 @@ tabButtons.forEach(btn => {
     });
 });
 
-function startGame() {
-    // --- NEW: Request Fullscreen ---
-    if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch((err) => {
-            console.log("Fullscreen blocked by browser:", err.message);
-        });
+async function startGame() {
+    gameStatus.hidden = true;
+    isGameRunning = true;
+    startBtn.disabled = true;
+
+    if (gameScreen.requestFullscreen) {
+        try {
+            await gameScreen.requestFullscreen();
+        } catch (error) {
+            console.error('Could not enter fullscreen:', error);
+            gameStatus.textContent = 'Fullscreen is unavailable; this drill is running in a window.';
+            gameStatus.hidden = false;
+        }
+    } else {
+        gameStatus.textContent = 'Fullscreen is not supported by this browser; this drill is running in a window.';
+        gameStatus.hidden = false;
     }
-    // -------------------------------
+
+    if (!isGameRunning) return;
 
     score = 0;
     timeLeft = 30;
     scoreDisplay.textContent = score;
     timerDisplay.textContent = timeLeft;
-    startBtn.disabled = true;
     arena.innerHTML = '';
     
     spawnTarget();
@@ -99,23 +117,46 @@ function startGame() {
     }, 1000);
 }
 
+document.addEventListener('fullscreenchange', () => {
+    if (isGameRunning && document.fullscreenElement !== gameScreen) {
+        cancelGame();
+    }
+});
+
+function cancelGame() {
+    isGameRunning = false;
+    clearInterval(gameInterval);
+    clearInterval(targetMoveInterval);
+    arena.innerHTML = '';
+    startBtn.disabled = false;
+    startBtn.textContent = 'Start Drill';
+    gameStatus.textContent = 'Drill canceled because fullscreen was exited. Your score was not saved.';
+    gameStatus.hidden = false;
+}
+
 function spawnTarget() {
     const target = document.createElement('div');
     target.classList.add('target');
-    
-    let size = 40;
+
+    let size = isMobileDevice ? 56 : 40;
     let moveSpeed = 0;
-    
-    if (currentPlayDifficulty === 'easy') { size = 50; }
-    else if (currentPlayDifficulty === 'medium') { size = 40; moveSpeed = 800; }
-    else if (currentPlayDifficulty === 'hard') { size = 25; moveSpeed = 500; }
+
+    if (currentPlayDifficulty === 'easy') {
+        size = isMobileDevice ? 62 : 50;
+    } else if (currentPlayDifficulty === 'medium') {
+        size = isMobileDevice ? 52 : 40;
+        moveSpeed = 800;
+    } else if (currentPlayDifficulty === 'hard') {
+        size = isMobileDevice ? 38 : 25;
+        moveSpeed = 500;
+    }
 
     target.style.width = size + 'px';
     target.style.height = size + 'px';
 
     function moveTarget() {
-        const maxX = arena.clientWidth - size;
-        const maxY = arena.clientHeight - size;
+        const maxX = Math.max(0, arena.clientWidth - size);
+        const maxY = Math.max(0, arena.clientHeight - size);
         target.style.left = Math.floor(Math.random() * maxX) + 'px';
         target.style.top = Math.floor(Math.random() * maxY) + 'px';
     }
@@ -123,30 +164,38 @@ function spawnTarget() {
     moveTarget();
     if (moveSpeed > 0) targetMoveInterval = setInterval(moveTarget, moveSpeed);
 
-    target.addEventListener('mousedown', () => {
+    const handleTargetHit = () => {
         score++;
         scoreDisplay.textContent = score;
         playHitSound();
         clearInterval(targetMoveInterval);
         target.remove();
         spawnTarget();
-    });
+    };
+
+    target.addEventListener('pointerdown', handleTargetHit);
 
     arena.appendChild(target);
 }
 
-function endGame() {
-    // --- NEW: Exit Fullscreen ---
-    if (document.fullscreenElement) {
-        document.exitFullscreen().catch(err => console.log(err));
-    }
-    // ----------------------------
-
+async function endGame() {
+    isGameRunning = false;
     clearInterval(gameInterval);
     clearInterval(targetMoveInterval);
     arena.innerHTML = '';
     startBtn.disabled = false;
     startBtn.textContent = 'Play Again';
+
+    if (document.fullscreenElement === gameScreen) {
+        try {
+            await document.exitFullscreen();
+        } catch (error) {
+            console.error('Could not exit fullscreen:', error);
+            gameStatus.textContent = 'Drill complete. Press Esc to leave fullscreen.';
+            gameStatus.hidden = false;
+        }
+    }
+
     checkHighScore(score);
 }
 

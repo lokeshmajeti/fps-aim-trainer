@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     background-color: #0a0a0a;
     color: #fff;
@@ -6,36 +10,71 @@ body {
     flex-direction: column;
     align-items: center;
     margin: 0;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    padding: clamp(14px, 2vw, 20px) clamp(12px, 3vw, 24px) 28px;
 }
 
 .hud {
     display: flex;
-    gap: 40px;
+    gap: clamp(12px, 2vw, 40px);
     align-items: center;
-    padding: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: min(100%, 1200px);
+    padding: 10px 0 18px;
+}
+
+.game-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: min(100%, 1200px);
+}
+
+.game-status {
+    margin: 0 0 12px;
+    color: #ffb347;
+    text-align: center;
 }
 
 .stats {
     display: flex;
-    gap: 20px;
+    gap: clamp(10px, 2vw, 20px);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.stats h2 {
+    margin: 0;
+    font-size: clamp(1.7rem, 2.2vw, 3rem);
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 button {
     background-color: #ff3366;
     color: white;
     border: none;
-    padding: 10px 20px;
-    font-size: 18px;
-    border-radius: 4px;
+    padding: 12px 22px;
+    font-size: clamp(0.9rem, 1.2vw, 1.2rem);
+    border-radius: 8px;
     cursor: pointer;
     text-transform: uppercase;
-    font-weight: bold;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    box-shadow: 0 8px 18px rgba(255, 51, 102, 0.18);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    touch-action: manipulation;
 }
 
 button:hover {
     background-color: #ff5c85;
+}
+
+button:active {
+    transform: translateY(1px) scale(0.99);
 }
 
 /* --- NEW CUSTOM SELECTOR STYLES --- */
@@ -46,18 +85,21 @@ button:hover {
     padding: 5px;
     border-radius: 8px;
     border: 1px solid #333;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .diff-btn, .tab-btn {
     background-color: transparent;
     color: #888;
     border: 1px solid transparent;
-    padding: 8px 16px;
-    font-size: 14px;
+    padding: 10px 18px;
+    font-size: clamp(0.72rem, 1vw, 0.9rem);
     text-transform: uppercase;
     letter-spacing: 1px;
-    border-radius: 4px;
+    border-radius: 6px;
     transition: all 0.2s ease-in-out;
+    min-width: 90px;
 }
 
 .diff-btn:hover, .tab-btn:hover {
@@ -74,14 +116,41 @@ button:hover {
 /* ---------------------------------- */
 
 .arena {
-    width: 80vw;
-    height: 60vh;
+    width: min(100%, 103.1vh);
+    aspect-ratio: 16 / 9;
     background-color: #1a1a1a;
     border: 3px solid #333;
     position: relative;
-    /* NEW: Custom precision crosshair */
-    cursor: crosshair; 
+    cursor: crosshair;
     overflow: hidden;
+    border-radius: 12px;
+    box-shadow: inset 0 0 20px rgba(255,255,255,0.02);
+}
+
+#game-screen:fullscreen {
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-width: none;
+    padding: clamp(12px, 2vw, 24px);
+    gap: clamp(8px, 1.5vh, 18px);
+    background-color: #0a0a0a;
+    overflow: hidden;
+}
+
+#game-screen:fullscreen .hud {
+    flex: 0 0 auto;
+    width: 100%;
+    padding: 0;
+}
+
+#game-screen:fullscreen .arena {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    aspect-ratio: auto;
 }
 
 /* NEW: Add a visual hitmarker effect that flashes when you click */
@@ -95,6 +164,9 @@ button:hover {
     position: absolute;
     box-shadow: 0 0 10px #00e5ff;
     transition: transform 0.05s, left 0.4s ease-in-out, top 0.4s ease-in-out;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
 }
 
 .target:active {
@@ -106,10 +178,11 @@ button:hover {
     margin-top: 20px;
     background-color: #1a1a1a;
     border: 2px solid #333;
-    padding: 15px 30px;
-    border-radius: 8px;
-    width: 350px;
+    padding: 15px 24px;
+    border-radius: 12px;
+    width: min(90vw, 500px);
     text-align: center;
+    box-sizing: border-box;
 }
 
 .leaderboard h3 {
@@ -134,9 +207,11 @@ button:hover {
 #high-score-list li {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
+    gap: 14px;
+    padding: 10px 0;
     border-bottom: 1px solid #333;
-    font-size: 18px;
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    align-items: center;
 }
 
 #high-score-list li:last-child {
@@ -240,44 +315,65 @@ button:hover {
 }
 /* --- MOBILE RESPONSIVE LAYOUT --- */
 @media (max-width: 768px) {
-    /* Allow the page to scroll on mobile so the leaderboard isn't cut off */
     body {
-        height: auto;
-        overflow-y: auto; 
-        padding-bottom: 30px;
+        padding: 18px 12px 30px;
+        overflow-y: auto;
     }
 
-    /* Stack the top menu items vertically so they don't squish */
     .hud {
         flex-direction: column;
-        gap: 15px;
-        padding: 10px;
-        text-align: center;
+        gap: 12px;
+        padding-top: 8px;
+        width: 100%;
     }
 
-    /* Shrink the text slightly for mobile screens */
+    .stats {
+        justify-content: center;
+        width: 100%;
+    }
+
     .stats h2 {
-        font-size: 20px;
+        font-size: clamp(1.45rem, 6vw, 2.2rem);
         margin: 5px 0;
     }
 
-    /* Make the game arena wider on phones to maximize tap space */
+    .difficulty-selector {
+        width: 100%;
+    }
+
+    .diff-btn, .tab-btn {
+        flex: 1 1 30%;
+        min-width: 0;
+        padding: 12px 8px;
+    }
+
+    #start-btn {
+        width: 100%;
+        max-width: 320px;
+    }
+
     .arena {
-        width: 95vw;
-        height: 50vh; /* Adjusts the height to feel more natural on a phone */
+        width: min(100%, 69.33vh);
+        aspect-ratio: 4 / 3;
         border-width: 2px;
     }
 
-    /* Ensure the leaderboard doesn't break off the edges of the screen */
+    #game-screen:fullscreen .arena {
+        width: 100%;
+    }
+
     .leaderboard {
-        width: 90vw;
-        padding: 10px;
+        width: min(100%, 500px);
+        padding: 12px 10px;
         margin-top: 20px;
     }
 
-    /* Adjust modal size for mobile screens */
+    .leaderboard h3 {
+        font-size: 1.1rem;
+    }
+
     .modal-content {
-        width: 85%;
-        padding: 20px;
+        width: min(88vw, 360px);
+        padding: 22px 16px 18px;
     }
 }
